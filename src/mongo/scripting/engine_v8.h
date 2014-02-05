@@ -63,10 +63,10 @@ namespace mongo {
          * @param  instanceHandle  persistent handle to the weakly referenced object
          * @param  rawData         pointer to the object instance
          */
-        void track(v8::Persistent<v8::Value> instanceHandle, _ObjType* instance) {
+	    void track(v8::Isolate* isolate, v8::Persistent<v8::Value> instanceHandle, _ObjType* instance) {
             TrackedPtr* collectionHandle = new TrackedPtr(instance, this);
             _container.insert(collectionHandle);
-            instanceHandle.MakeWeak(collectionHandle, deleteOnCollect);
+            instanceHandle.MakeWeak(isolate, collectionHandle, deleteOnCollect);
         }
         /**
          * Free any remaining objects and their TrackedPtrs.  Invoked when the
@@ -104,7 +104,7 @@ namespace mongo {
          * @param  instanceHandle  persistent handle to the weakly referenced object
          * @param  rawData         pointer to the TrackedPtr instance
          */
-        static void deleteOnCollect(v8::Persistent<v8::Value> instanceHandle, void* rawData) {
+        static void deleteOnCollect(v8::Isolate* isolate, v8::Persistent<v8::Value> instanceHandle, void* rawData) {
             TrackedPtr* trackedPtr = static_cast<TrackedPtr*>(rawData);
             trackedPtr->_tracker->_container.erase(trackedPtr);
             delete trackedPtr;

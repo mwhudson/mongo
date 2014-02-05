@@ -90,7 +90,7 @@ namespace mongo {
         obj->SetInternalField(0, v8::External::New(holder)); // Holder
         obj->SetInternalField(1, v8::Object::New()); // Object
         v8::Persistent<v8::Object> p = v8::Persistent<v8::Object>::New(obj);
-        bsonHolderTracker.track(p, holder);
+        bsonHolderTracker.track(getIsolate(), p, holder);
     }
 
     static v8::Handle<v8::Value> namedGet(v8::Local<v8::String> name,

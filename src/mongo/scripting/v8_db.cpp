@@ -150,7 +150,7 @@ namespace mongo {
         }
 
         v8::Persistent<v8::Object> self = v8::Persistent<v8::Object>::New(args.This());
-        scope->dbClientWithCommandsTracker.track(self, conn);
+        scope->dbClientWithCommandsTracker.track(scope->getIsolate(), self, conn);
 
         ScriptEngine::runConnectCallback(*conn);
 
@@ -171,7 +171,7 @@ namespace mongo {
 
         DBClientBase* conn = createDirectClient();
         v8::Persistent<v8::Object> self = v8::Persistent<v8::Object>::New(args.This());
-        scope->dbClientBaseTracker.track(self, conn);
+        scope->dbClientBaseTracker.track(scope->getIsolate(), self, conn);
 
         args.This()->SetInternalField(0, v8::External::New(conn));
         args.This()->ForceSet(scope->v8StringData("slaveOk"), v8::Boolean::New(false));
@@ -218,7 +218,7 @@ namespace mongo {
         v8::Handle<v8::Function> cons = scope->InternalCursorFT()->GetFunction();
         v8::Persistent<v8::Object> c = v8::Persistent<v8::Object>::New(cons->NewInstance());
         c->SetInternalField(0, v8::External::New(cursor.get()));
-        scope->dbClientCursorTracker.track(c, cursor.release());
+        scope->dbClientCursorTracker.track(scope->getIsolate(), c, cursor.release());
         return c;
     }
 
@@ -239,7 +239,7 @@ namespace mongo {
         v8::Handle<v8::Function> cons = scope->InternalCursorFT()->GetFunction();
         v8::Persistent<v8::Object> c = v8::Persistent<v8::Object>::New(cons->NewInstance());
         c->SetInternalField(0, v8::External::New(cursor.get()));
-        scope->dbClientCursorTracker.track(c, cursor.release());
+        scope->dbClientCursorTracker.track(scope->getIsolate(), c, cursor.release());
         return c;
     }
 
