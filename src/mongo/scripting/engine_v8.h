@@ -104,11 +104,10 @@ namespace mongo {
          * @param  instanceHandle  persistent handle to the weakly referenced object
          * @param  rawData         pointer to the TrackedPtr instance
          */
-        static void deleteOnCollect(v8::Isolate* isolate, v8::Persistent<v8::Value> instanceHandle, void* rawData) {
-            TrackedPtr* trackedPtr = static_cast<TrackedPtr*>(rawData);
+        static void deleteOnCollect(v8::Isolate* isolate, v8::Persistent<v8::Value>* instanceHandle, TrackedPtr* trackedPtr) {
             trackedPtr->_tracker->_container.erase(trackedPtr);
             delete trackedPtr;
-            instanceHandle.Dispose();
+            instanceHandle->Dispose();
         }
 
         // container for all TrackedPtrs created by this ObjTracker instance
