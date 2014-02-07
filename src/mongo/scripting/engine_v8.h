@@ -17,6 +17,8 @@
 
 #pragma once
 
+#define V8_USE_UNSAFE_HANDLES
+
 #include <v8.h>
 #include <vector>
 
