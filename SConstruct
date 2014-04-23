@@ -225,7 +225,9 @@ add_option( "asio" , "Use Asynchronous IO (NOT READY YET)" , 0 , True )
 add_option( "ssl" , "Enable SSL" , 0 , True )
 
 # library choices
-add_option( "usev8" , "use v8 for javascript" , 0 , True )
+js_engine_choices = ['v8-3.12', 'v8-3.25', 'none']
+add_option( "js-engine", "JavaScript scripting engine implementation", 1, True,
+           type='choice', default=js_engine_choices[0], choices=js_engine_choices)
 add_option( "libc++", "use libc++ (experimental, requires clang)", 0, True )
 
 # mongo feature options
@@ -442,7 +444,12 @@ static = has_option( "static" )
 
 noshell = has_option( "noshell" ) 
 
-usev8 = has_option( "usev8" ) 
+jsEngine = get_option( "js-engine")
+
+usev8 = (jsEngine != 'none')
+
+v8version = jsEngine[3:] if jsEngine.startswith('v8-') else 'none'
+v8suffix = '' if v8version == '3.12' else '-' + v8version
 
 asio = has_option( "asio" )
 
@@ -599,8 +606,6 @@ if has_option( "durableDefaultOn" ):
 
 if has_option( "durableDefaultOff" ):
     env.Append( CPPDEFINES=[ "_DURABLEDEFAULTOFF" ] )
-
-usev8 = True
 
 extraLibPlaces = []
 
@@ -1659,7 +1664,8 @@ Export("get_option")
 Export("has_option use_system_version_of_library")
 Export("mongoCodeVersion")
 Export("usev8")
-Export("darwin windows solaris linux freebsd nix")
+Export("darwin windows solaris linux freebsd nix openbsd")
+Export("v8version v8suffix")
 Export('module_sconscripts')
 Export("debugBuild optBuild")
 Export("enforce_glibc")
